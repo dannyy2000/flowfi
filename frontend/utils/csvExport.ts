@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// CSV Export utilities for FlowFi
 export const convertArrayToCSV = (arr: any[]): string => {
     if (!arr || !arr.length) return '';
     const separator = ',';
