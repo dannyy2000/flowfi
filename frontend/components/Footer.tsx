@@ -1,6 +1,3 @@
-import React from 'react';
-import { Button } from './ui/Button';
-
 export const Footer = () => {
     return (
         <footer className="border-t border-glass-border bg-background pt-32 pb-16 px-6 md:px-12 relative overflow-hidden">

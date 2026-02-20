@@ -1,31 +1,33 @@
-export const convertArrayToCSV = (arr: any[]): string => {
-    if (!arr || !arr.length) return '';
-    const separator = ',';
-    const keys = Object.keys(arr[0]);
-    const csvContent =
-        keys.join(separator) +
-        '\n' +
-        arr
-            .map((row) => {
-                return keys
-                    .map((k) => {
-                        let cell = row[k] === null || row[k] === undefined ? '' : row[k];
-                        cell =
-                            cell instanceof Date
-                                ? cell.toLocaleString()
-                                : cell.toString().replace(/"/g, '""');
-                        if (cell.search(/("|,|\n)/g) >= 0) {
-                            cell = `"${cell}"`;
-                        }
-                        return cell;
-                    })
-                    .join(separator);
-            })
-            .join('\n');
-    return csvContent;
+type CsvRow = Record<string, unknown>;
+
+const escapeCsvCell = (value: unknown): string => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+
+    const text = value instanceof Date ? value.toLocaleString() : String(value);
+    const escaped = text.replace(/"/g, '""');
+
+    return /("|,|\n)/.test(escaped) ? `"${escaped}"` : escaped;
 };
 
-export const downloadCSV = (data: any[], filename: string) => {
+export const convertArrayToCSV = <T extends CsvRow>(
+    arr: T[] | null | undefined
+): string => {
+    if (!arr || arr.length === 0) return '';
+
+    const separator = ',';
+    const keys = Object.keys(arr[0]);
+
+    return [
+        keys.join(separator),
+        ...arr.map((row) =>
+            keys.map((key) => escapeCsvCell(row[key])).join(separator)
+        ),
+    ].join('\n');
+};
+
+export const downloadCSV = <T extends CsvRow>(data: T[], filename: string) => {
     const csvData = convertArrayToCSV(data);
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
