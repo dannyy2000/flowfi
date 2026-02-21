@@ -1,7 +1,7 @@
 import React from 'react';
 import { downloadCSV } from '../utils/csvExport';
 
-interface StreamData {
+interface StreamData extends Record<string, unknown> {
     id: string;
     date: string;
     recipient: string;
