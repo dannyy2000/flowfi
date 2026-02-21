@@ -1,8 +1,4 @@
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // CSV Export utilities for FlowFi
-export const convertArrayToCSV = (arr: any[]): string => {
-    if (!arr || !arr.length) return '';
 
 type CsvRow = Record<string, unknown>;
 
@@ -21,7 +17,6 @@ export const convertArrayToCSV = <T extends CsvRow>(
     arr: T[] | null | undefined
 ): string => {
     if (!arr || arr.length === 0) return '';
-
 
     const separator = ',';
     const keys = Object.keys(arr[0]);
