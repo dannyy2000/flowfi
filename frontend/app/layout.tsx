@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import { IBM_Plex_Mono, Sora } from "next/font/google";
 import React from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { WalletProvider } from "@/context/wallet-context";
 import Link from "next/link";
-import React from "react";
+
 
 const sora = Sora({
   variable: "--font-display",

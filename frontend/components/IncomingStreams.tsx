@@ -31,7 +31,7 @@ const IncomingStreams: React.FC = () => {
     };
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setFilter(e.target.value as any);
+        setFilter(e.target.value as 'All' | 'Active' | 'Completed' | 'Paused');
     };
 
     return (
