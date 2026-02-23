@@ -4,8 +4,6 @@ import React from "react";
 
 import "./globals.css";
 import { WalletProvider } from "@/context/wallet-context";
-import Link from "next/link";
-
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "@/context/theme-provider";
 
@@ -42,63 +40,20 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <WalletProvider>
-            <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-bold text-blue-600">
-                    FlowFi
-                  </span>
-                </div>
-                <nav className="flex gap-6">
-                  <Link
-                    href="/"
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 transition-colors"
-                  >
-                    Outgoing
-                  </Link>
-                  <Link
-                    href="/incoming"
-                    className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 transition-colors"
-                  >
-                    Incoming
-                  </Link>
-                </nav>
-              </div>
-
-              <nav className="flex gap-6">
-                <Link
-                  href="/"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 transition-colors"
-                >
-                  Outgoing
-                </Link>
-                <Link
-                  href="/incoming"
-                  className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 transition-colors"
-                >
-                  Incoming
-                </Link>
-              </nav>
-            </div>
-          </header>
-          {children}
-        </WalletProvider>
-        <Toaster
-               position="top-right"
-               toastOptions={{
-               duration: 4000,
-               style: {
-                  background: "#111",
-                  color: "#fff",
-                  border: "1px solid #333",
-                  borderRadius: "12px",
-    },
-  }}
-/>
-
-            </header>
             {children}
           </WalletProvider>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: "#111",
+                color: "#fff",
+                border: "1px solid #333",
+                borderRadius: "12px",
+              },
+            }}
+          />
         </ThemeProvider>
 
       </body>
