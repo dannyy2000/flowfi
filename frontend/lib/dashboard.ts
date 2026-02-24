@@ -93,35 +93,6 @@ const MOCK_STATS_BY_WALLET: Record<WalletId, DashboardSnapshot | null> = {
       },
     ],
   },
-  albedo: null,
-  xbull: {
-    totalSent: 2130,
-    totalReceived: 3890,
-    totalValueLocked: 5400,
-    activeStreamsCount: 1,
-    streams: [
-      {
-        id: "stream-3",
-        date: "2023-10-27",
-        recipient: "G...IJKL",
-        amount: 300,
-        token: "EURC",
-        status: "Active",
-        deposited: 300,
-        withdrawn: 50,
-      },
-    ],
-    recentActivity: [
-      {
-        id: "act-4",
-        title: "Ops Payroll",
-        description: "Incoming stream payout",
-        amount: 630,
-        direction: "received",
-        timestamp: "2026-02-19T08:05:00.000Z",
-      },
-    ],
-  },
 };
 
 export function getMockDashboardStats(

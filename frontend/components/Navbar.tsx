@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from './ui/Button';
 import { ModeToggle } from './ModeToggle';
+import { WalletButton } from './wallet/WalletButton';
 
 export const Navbar = () => {
     return (
@@ -24,9 +25,7 @@ export const Navbar = () => {
 
             <div className="flex items-center gap-4">
                 <Button variant="ghost" className="hidden sm:inline-flex">Log In</Button>
-                <Button variant="primary" glow size="md">
-                    Connect Wallet
-                </Button>
+                <WalletButton />
             </div>
         </nav>
     );
