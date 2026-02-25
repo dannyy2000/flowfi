@@ -1,32 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import toast from "react-hot-toast";
 import type { Stream } from '@/lib/dashboard';
 
 interface IncomingStreamsProps {
     streams: Stream[];
+    onShowDetails: (stream: Stream) => void;
 }
 
-const IncomingStreams: React.FC<IncomingStreamsProps> = ({ streams }) => {
+const IncomingStreams: React.FC<IncomingStreamsProps> = ({ streams, onShowDetails }) => {
     const [filter, setFilter] = useState<'All' | 'Active' | 'Completed' | 'Paused'>('All');
 
     const filteredStreams = filter === 'All'
         ? streams
         : streams.filter(s => s.status === filter);
-
-    const handleWithdraw = async () => {
-        const toastId = toast.loading("Transaction pending...");
-
-        try {
-            // Simulate async transaction (replace with real blockchain call later)
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            toast.success("Withdrawal successful!", { id: toastId });
-        } catch {
-            toast.error("Transaction failed.", { id: toastId });
-        }
-    };
 
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setFilter(e.target.value as 'All' | 'Active' | 'Completed' | 'Paused');
@@ -69,7 +56,14 @@ const IncomingStreams: React.FC<IncomingStreamsProps> = ({ streams }) => {
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {filteredStreams.map((stream) => (
-                            <tr key={stream.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                            <tr
+                                key={stream.id}
+                                className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer"
+                                onClick={(e) => {
+                                    if ((e.target as HTMLElement).closest('button')) return;
+                                    onShowDetails(stream);
+                                }}
+                            >
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">{stream.id}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{stream.token}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{stream.deposited} {stream.token}</td>
@@ -85,13 +79,13 @@ const IncomingStreams: React.FC<IncomingStreamsProps> = ({ streams }) => {
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <button
                                         disabled={stream.status !== 'Active'}
-                                        onClick={handleWithdraw}
+                                        onClick={() => onShowDetails(stream)}
                                         className={`px-4 py-2 rounded-lg transition-all ${stream.status === 'Active'
-                                                ? 'bg-accent text-white hover:bg-accent-hover shadow-lg'
-                                                : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                                            ? 'bg-accent text-white hover:bg-accent-hover shadow-lg'
+                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
                                             }`}
                                     >
-                                        Withdraw
+                                        View Details
                                     </button>
                                 </td>
                             </tr>

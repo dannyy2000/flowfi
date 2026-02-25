@@ -28,6 +28,7 @@ import {
   createStream as sorobanCreateStream,
   topUpStream as sorobanTopUp,
   cancelStream as sorobanCancel,
+  withdrawFromStream as sorobanWithdraw,
   toBaseUnits,
   toDurationSeconds,
   getTokenAddress,
@@ -40,6 +41,7 @@ import {
 } from "../stream-creation/StreamCreationWizard";
 import { TopUpModal } from "../stream-creation/TopUpModal";
 import { CancelConfirmModal } from "../stream-creation/CancelConfirmModal";
+import { StreamDetailsModal } from "./StreamDetailsModal";
 import { Button } from "../ui/Button";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -58,7 +60,8 @@ interface SidebarItem {
 type ModalState =
   | null
   | { type: "topup"; stream: Stream }
-  | { type: "cancel"; stream: Stream };
+  | { type: "cancel"; stream: Stream }
+  | { type: "details"; stream: Stream; isRecipient?: boolean };
 
 interface StreamFormValues {
   recipient: string;
@@ -197,6 +200,7 @@ function renderStreams(
   snapshot: DashboardSnapshot | null,
   onTopUp: (stream: Stream) => void,
   onCancel: (stream: Stream) => void,
+  onShowDetails: (stream: Stream) => void,
 ) {
   if (!snapshot) return null;
   return (
@@ -220,7 +224,14 @@ function renderStreams(
             {snapshot.outgoingStreams
               .filter((s) => s.status === "Active")
               .map((stream) => (
-                <tr key={stream.id}>
+                <tr
+                  key={stream.id}
+                  className="cursor-pointer hover:bg-white/5"
+                  onClick={(e) => {
+                    if ((e.target as HTMLElement).closest('button')) return;
+                    onShowDetails(stream);
+                  }}
+                >
                   <td>{stream.date}</td>
                   <td>
                     <code className="text-xs">{stream.recipient}</code>
@@ -556,6 +567,25 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
     }
   };
 
+  const handleWithdraw = async (streamId: string) => {
+    const toastId = toast.loading("Withdrawing tokens…");
+    try {
+      await sorobanWithdraw(session, {
+        streamId: BigInt(streamId.replace(/\D/g, "") || "0"),
+      });
+
+      setModal(null);
+      toast.success("Withdrawal successful!", { id: toastId });
+
+      if (session?.publicKey) {
+        fetchDashboardData(session.publicKey).then(setSnapshot);
+      }
+    } catch (err) {
+      toast.error(toSorobanErrorMessage(err), { id: toastId });
+      throw err;
+    }
+  };
+
   const handleFormCreateStream = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const hasRequiredFields =
@@ -590,7 +620,10 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
     if (activeTab === "incoming") {
       return (
         <div className="mt-8">
-          <IncomingStreams />
+          <IncomingStreams
+            streams={snapshot?.incomingStreams || []}
+            onShowDetails={(stream) => setModal({ type: "details", stream, isRecipient: true })}
+          />
         </div>
       );
     }
@@ -622,7 +655,12 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
         <div className="dashboard-content-stack mt-8">
           {renderStats(snapshot)}
           {renderAnalytics(snapshot)}
-          {renderStreams(snapshot, (stream: Stream) => setModal({ type: "topup", stream }), (stream: Stream) => setModal({ type: "cancel", stream }))}
+          {renderStreams(
+            snapshot,
+            (stream: Stream) => setModal({ type: "topup", stream }),
+            (stream: Stream) => setModal({ type: "cancel", stream }),
+            (stream: Stream) => setModal({ type: "details", stream })
+          )}
           {renderRecentActivity(snapshot)}
         </div>
       );
@@ -908,6 +946,20 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
             withdrawn={modal.stream.withdrawn}
             onConfirm={handleCancelConfirm}
             onClose={() => setModal(null)}
+          />
+        )
+      }
+
+      {/* Stream Details Modal */}
+      {
+        modal?.type === "details" && (
+          <StreamDetailsModal
+            stream={modal.stream}
+            isRecipient={modal.isRecipient}
+            onClose={() => setModal(null)}
+            onCancelClick={() => setModal({ type: "cancel", stream: modal.stream })}
+            onTopUpClick={() => setModal({ type: "topup", stream: modal.stream })}
+            onWithdrawClick={() => handleWithdraw(modal.stream.id)}
           />
         )
       }
