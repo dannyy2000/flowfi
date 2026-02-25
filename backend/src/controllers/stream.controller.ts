@@ -70,7 +70,7 @@ export const listStreams = async (req: Request, res: Response) => {
  */
 export const getStream = async (req: Request, res: Response) => {
   try {
-    const { streamId } = req.params;
+    const streamId = req.params.streamId as string;
 
     const stream = await prisma.stream.findUnique({
       where: { streamId: parseInt(streamId) },
@@ -99,7 +99,7 @@ export const getStream = async (req: Request, res: Response) => {
  */
 export const getStreamEvents = async (req: Request, res: Response) => {
   try {
-    const { streamId } = req.params;
+    const streamId = req.params.streamId as string;
 
     const events = await prisma.streamEvent.findMany({
       where: { streamId: parseInt(streamId) },
