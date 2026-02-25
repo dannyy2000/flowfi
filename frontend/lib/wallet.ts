@@ -112,12 +112,19 @@ async function connectFreighter(): Promise<WalletSession> {
     throw new Error(addressError || "Freighter did not return a valid public key.");
   }
 
-  let networkId = STELLAR_NETWORK_ID;
+  let networkId =STELLAR_NETWORK_ID.toLowerCase().includes("public") ? "Mainnet" : "Testnet";
 
   try {
     const details = await getNetworkDetails();
     if (details.networkPassphrase && !details.error) {
-      networkId = details.networkPassphrase;
+      const raw = String(details.networkPassphrase).toLowerCase();
+      if (raw.includes("public") || raw === "mainnet") {
+        networkId = "Mainnet";
+      } else if (raw.includes("test") || raw.includes("sdf")) {
+        networkId = "Testnet";
+      } else {
+        networkId = "Other";
+      }
     }
   } catch {
     // ignore
