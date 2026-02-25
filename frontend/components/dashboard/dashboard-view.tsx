@@ -364,6 +364,9 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
   >(null);
   const [streamFormMessage, setStreamFormMessage] =
     React.useState<StreamFormMessageState | null>(null);
+  const [showWizard, setShowWizard] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const stats = getMockDashboardStats(session.walletId);
 
   React.useEffect(() => {
@@ -415,6 +418,8 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
       `Stream created successfully!\n\nRecipient: ${data.recipient}\nToken: ${data.token}\nAmount: ${data.amount}\nDuration: ${data.duration} ${data.durationUnit}`,
     );
     setShowWizard(false);
+  };
+
   const handleApplyTemplate = (templateId: string) => {
     const template = templates.find((item) => item.id === templateId);
     if (!template) {
@@ -526,7 +531,7 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
     setStreamFormMessage(null);
   };
 
-  const handleCreateStream = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitStreamForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const hasRequiredFields =
@@ -563,14 +568,9 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
     if (activeTab === "incoming") {
       return (
         <div className="mt-8">
-          <IncomingStreams />
+          <IncomingStreams streams={stats?.incomingStreams || []} />
         </div>
       );
-    }
-
-    if (activeTab === "overview") {
-      if (!stats) {
-      return <div className="mt-8"><IncomingStreams streams={stats?.incomingStreams || []} /></div>;
     }
 
     if (activeTab === "streams") {
@@ -673,7 +673,7 @@ export function DashboardView({ session, onDisconnect }: DashboardViewProps) {
                 )}
               </div>
 
-              <form className="stream-form" onSubmit={handleCreateStream}>
+              <form className="stream-form" onSubmit={handleSubmitStreamForm}>
                 <div className="stream-form__meta">
                   <div>
                     <h4>Stream Configuration</h4>
