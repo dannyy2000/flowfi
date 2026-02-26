@@ -24,7 +24,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         working-directory: frontend
 
       - name: Lint
@@ -65,7 +65,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
         working-directory: backend
 
       - name: Generate Prisma Client
