@@ -266,6 +266,24 @@ fn test_create_stream_rejects_zero_duration() {
 }
 
 #[test]
+fn test_create_stream_rejects_invalid_token_address() {
+    let env = Env::default();
+    env.mock_all_auths();
+    let client = create_contract(&env);
+
+    // Account addresses are not token contracts.
+    let invalid_token = Address::generate(&env);
+    let result = client.try_create_stream(
+        &Address::generate(&env),
+        &Address::generate(&env),
+        &invalid_token,
+        &500,
+        &100,
+    );
+    assert_eq!(result, Err(Ok(StreamError::InvalidTokenAddress)));
+}
+
+#[test]
 fn test_create_stream_emits_event() {
     let env = Env::default();
     env.mock_all_auths();
